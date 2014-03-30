@@ -13,17 +13,20 @@ for i = 1, GetNumCompanions("MOUNT") do
 
 end
 
--- if already mounted, unmount
--- if not mount, if in flyable area random select a flyable mount else
--- random select a ground mount
 if IsMounted() == nil then
+  local slotID
+
   if IsFlyableArea() then
-    local slotID = slots_flying_mount[random(#slots_flying_mount)]
-    CallCompanion("MOUNT", slotID)
+    slotID = slots_flying_mount[random(#slots_flying_mount)]
   else
-    local slotID = slots_ground_mount[random(#slots_ground_mount)]
-    CallCompanion("MOUNT", slotID)
+    if IsSwimming() and #slots_water_mount > 0 then
+      slotID = slots_water_mount[random(#slots_water_mount)]
+    else
+      slotID = slots_ground_mount[random(#slots_ground_mount)]
+    end
   end
+
+  CallCompanion("MOUNT", slotID)
 else
   Dismount()
 end
