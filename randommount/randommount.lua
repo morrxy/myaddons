@@ -4,17 +4,17 @@ local slots_strider = {}
 -- Sea Mount Database
 -- GetCompanionInfo("MOUNT", i) doesn't provide a way to distinguish between (fast land/slow sea) and (slow land/fast sea)
 local seaMounts = {
-    30174,  --Riding Turtle
-    64731,  --Sea Turtle
-    --the following should be detected as sea only, added anyways as fallback
-    98718,  --Subdued Seahorse
-    75207 --Abyssal Seahorse
+  30174,  --Riding Turtle
+  64731,  --Sea Turtle
+  --the following should be detected as sea only, added anyways as fallback
+  98718,  --Subdued Seahorse
+  75207 --Abyssal Seahorse
 }
 
 -- Waterwalking Mount Database
 -- GetCompanionInfo("MOUNT", i) doesn't provide a way to distinguish waterwalking mounts
 local striderMounts = {
-    118089  --Azure Water Strider
+  118089  --Azure Water Strider
 }
 
 -- Check if mount can swim fast
@@ -55,19 +55,31 @@ for i = 1, GetNumCompanions("MOUNT") do
   local _,name,spellID,_,_,typeID = GetCompanionInfo("MOUNT", i)
 
   if typeID == 7 or typeID == 15 or typeID == 23 or typeID == 31 then
-    slots_flying_mount[#slots_flying_mount + 1] = i
+    slots_flying_mount[#slots_flying_mount + 1] = {
+      slot = i,
+      name = name,
+    }
   end
 
   if typeID == 12 or IsSeaMount(spellID) then
-    slots_sea_mount[#slots_sea_mount + 1] = i
+    slots_sea_mount[#slots_sea_mount + 1] = {
+      slot = i,
+      name = name,
+    }
   end
 
   if typeID == 23 or typeID == 29 or typeID == 31 then
-    slots_ground_mount[#slots_ground_mount + 1] = i
+    slots_ground_mount[#slots_ground_mount + 1] = {
+      slot = i,
+      name = name,
+    }
   end
 
-  if IsStriderMount(typeID) then
-    slots_strider[#slots_strider + 1] = i
+  if IsStriderMount(spellID) then
+    slots_strider[#slots_strider + 1] = {
+      slot = i,
+      name = name,
+    }
   end
 end
 
@@ -75,12 +87,12 @@ if IsMounted() == nil then
   local slotID
 
   if IsFlyableArea() then
-    slotID = slots_flying_mount[random(#slots_flying_mount)]
+    slotID = slots_flying_mount[random(#slots_flying_mount)].slot
   else
     if IsSwimming() and #slots_strider > 0 then
-      slotID = slots_sea_mount[random(#slots_strider_mount)]
+      slotID = slots_strider[random(#slots_strider)].slot
     else
-      slotID = slots_ground_mount[random(#slots_ground_mount)]
+      slotID = slots_ground_mount[random(#slots_ground_mount)].slot
     end
   end
 
@@ -88,4 +100,23 @@ if IsMounted() == nil then
 else
   Dismount()
 end
+
+-- local function showmount(table)
+--   for _,t in ipairs(table) do
+--     print(t.name)
+--   end
+-- end
+
+-- print("all flying mount:")
+-- showmount(slots_flying_mount)
+
+-- print("all ground mount:")
+-- showmount(slots_ground_mount)
+
+-- print("all sea mount:")
+-- showmount(slots_sea_mount)
+
+-- print("all strider mount:")
+-- showmount(slots_strider)
+
 
